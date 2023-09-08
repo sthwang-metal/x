@@ -2,6 +2,8 @@ module go.infratographer.com/x
 
 go 1.20
 
+replace go.infratographer.com/x => github.com/sthwang-metal/x v0.0.0-20230830174543-f271e55d386f
+
 require (
 	entgo.io/contrib v0.4.5
 	entgo.io/ent v0.12.3
