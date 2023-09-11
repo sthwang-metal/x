@@ -67,6 +67,8 @@ func (t Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (inte
 		attribute.String("returnType", fc.Field.Definition.Type.String()),
 	}
 
+    fmt.Println("fieldName", fc.Field.Name)
+
 	if fc.IsMethod {
 		for k, v := range fc.Args {
 			if strings.HasSuffix(k, "ID") || k == "id" {
