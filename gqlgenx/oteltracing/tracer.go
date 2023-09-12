@@ -56,7 +56,7 @@ func (Tracer) Validate(graphql.ExecutableSchema) error {
 func (t Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (interface{}, error) {
 	fc := graphql.GetFieldContext(ctx)
 
-    fmt.Println("In Intercept Field")
+    fmt.Println("In Intercept Field yessd")
 
 	// check if this is a method or a resolver, if it's not and we aren't emitting
 	// field spans skip tracing
