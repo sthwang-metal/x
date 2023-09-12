@@ -210,7 +210,8 @@ func (s *Server) Handler() http.Handler {
 // Serve serves an http server on the provided listener.
 // See ServeWithContext for more details.
 func (s *Server) Serve(listener net.Listener) error {
-	return s.ServeWithContext(context.Background(), listener)
+	ctx := context.Background()
+	return s.ServeWithContext(ctx, listener)
 }
 
 // ServeWithContext serves an http server on the provided listener.
