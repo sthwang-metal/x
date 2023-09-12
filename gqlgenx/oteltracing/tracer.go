@@ -38,7 +38,9 @@ var _ interface {
 	graphql.FieldInterceptor
 } = Tracer{}
 
-var tracer = otel.Tracer("go.infratographer.com/x/gqlgenx/oteltracing")
+
+
+const instrumentationName = "go.infratographer.com/x/gqlgenx/oteltracing"
 
 // ExtensionName returns the name of this extension
 func (Tracer) ExtensionName() string {
@@ -77,6 +79,7 @@ func (t Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (inte
 		}
 	}
 
+    tracer := otel.Tracer(instrumentationName)
 	ctx, span := tracer.Start(ctx, fc.Path().String(), trace.WithAttributes(attrs...))
 	defer span.End()
 
