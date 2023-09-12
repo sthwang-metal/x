@@ -80,10 +80,10 @@ func (t Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (inte
 	}
 
     tracer := otel.Tracer(instrumentationName)
-	ctx, span := tracer.Start(ctx, fc.Path().String(), trace.WithAttributes(attrs...))
+	newCtx, span := tracer.Start(ctx, fc.Path().String(), trace.WithAttributes(attrs...))
 	defer span.End()
 
     fmt.Println("satisfied conditions to create span")
 
-	return next(ctx)
+	return next(newCtx)
 }
