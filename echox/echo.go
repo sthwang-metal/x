@@ -30,6 +30,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
+	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 
 	"go.infratographer.com/x/echox/echozap"
@@ -155,6 +156,22 @@ func (s *Server) AddReadinessCheck(name string, f CheckFunc) *Server {
 	return s
 }
 
+type httpPropogator struct{}
+
+// Inject
+func (h httpPropogator) Inject(ctx context.Context, carrier propagation.TextMapCarrier) {
+}
+
+// Extract reads cross-cutting concerns from the carrier into a Context.
+func (h httpPropogator) Extract(ctx context.Context, carrier propagation.TextMapCarrier) context.Context {
+	return ctx
+}
+
+// Fields returns the keys whose values are set with Inject.
+func (h httpPropogator) Fields() []string {
+	return nil
+}
+
 // Handler returns a new http.Handler for serving requests.
 func (s *Server) Handler() http.Handler {
 	hostname, err := os.Hostname()
@@ -164,10 +181,12 @@ func (s *Server) Handler() http.Handler {
 
 	engine := echo.New()
 
+	var propagator httpPropogator
+
 	engine.Use(middleware.RequestID())
 	engine.Use(echozap.Middleware(s.logger, s.echozapOpts...))
 	engine.Use(middleware.Recover())
-	engine.Use(otelecho.Middleware(hostname, otelecho.WithSkipper(SkipDefaultEndpoints)))
+	engine.Use(otelecho.Middleware(hostname, otelecho.WithSkipper(SkipDefaultEndpoints), otelecho.WithPropagators(propagator)))
 
 	engine.Use(s.middleware...)
 
