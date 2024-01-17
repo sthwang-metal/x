@@ -107,12 +107,16 @@ func (c *NATSConnection) jsSubscribe(ctx context.Context, subject string) (<-cha
 }
 
 func (c *NATSConnection) fetchMessages(ctx context.Context, sub *nats.Subscription, msgCh chan<- *nats.Msg) error {
+	fmt.Println("in fetchMessages")
 	ctx, cancel := context.WithTimeout(ctx, c.cfg.SubscriberFetchTimeout)
 
 	defer cancel()
 
+	fmt.Println("timeout: ", c.cfg.SubscriberFetchTimeout)
+
 	batch, err := sub.FetchBatch(c.cfg.SubscriberFetchBatchSize, nats.Context(ctx))
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -124,6 +128,7 @@ func (c *NATSConnection) fetchMessages(ctx context.Context, sub *nats.Subscripti
 		}
 	}
 
+	fmt.Println("batch error?= ", batch.Error())
 	return batch.Error()
 }
 
