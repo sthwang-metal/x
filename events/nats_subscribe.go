@@ -70,6 +70,8 @@ func (c *NATSConnection) jsSubscribe(ctx context.Context, subject string) (<-cha
 		fmt.Println(err)
 		return nil, err
 	}
+	fmt.Println("err: ", err)
+	fmt.Println("sub is valid?= ", sub.IsValid())
 
 	msgCh := make(chan *nats.Msg, c.cfg.SubscriberFetchBatchSize)
 
@@ -113,6 +115,11 @@ func (c *NATSConnection) fetchMessages(ctx context.Context, sub *nats.Subscripti
 	defer cancel()
 
 	fmt.Println("timeout: ", c.cfg.SubscriberFetchTimeout)
+
+	if sub == nil {
+		fmt.Println("sub is nil")
+	}
+	fmt.Println("sub is valid?= ", sub.IsValid())
 
 	batch, err := sub.FetchBatch(c.cfg.SubscriberFetchBatchSize, nats.Context(ctx))
 	if err != nil {
