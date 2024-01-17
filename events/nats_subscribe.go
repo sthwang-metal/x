@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/nats-io/nats.go"
@@ -54,6 +55,8 @@ func (c *NATSConnection) coreSubscribe(ctx context.Context, subject string) (<-c
 }
 
 func (c *NATSConnection) jsSubscribe(ctx context.Context, subject string) (<-chan *nats.Msg, error) {
+	fmt.Println("in jsSubscribe")
+
 	durableName := c.durableName(subject)
 
 	logger := c.logger.With(
@@ -64,6 +67,7 @@ func (c *NATSConnection) jsSubscribe(ctx context.Context, subject string) (<-cha
 
 	sub, err := c.jetstream.PullSubscribe(subject, durableName, c.cfg.subscribeOptions...)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -76,6 +80,7 @@ func (c *NATSConnection) jsSubscribe(ctx context.Context, subject string) (<-cha
 					continue
 				}
 
+				fmt.Println(err)
 				logger.Errorw("error fetching messages", "error", err)
 
 				select {
@@ -172,6 +177,9 @@ func (c *NATSConnection) SubscribeChanges(ctx context.Context, topic string) (<-
 // SubscribeEvents creates a new pull subscription parsing incoming messages as EventMessage messages and returning a new Message channel.
 func (c *NATSConnection) SubscribeEvents(ctx context.Context, topic string) (<-chan Message[EventMessage], error) {
 	topic = c.buildSubscribeSubject("events", topic)
+
+	fmt.Println("in SubscribeEvents")
+	fmt.Println(topic)
 
 	natsCh, err := c.jsSubscribe(ctx, topic)
 	if err != nil {
